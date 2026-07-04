@@ -1,5 +1,8 @@
 # Mixtape Bug Hunt Submission
 
+## AI Usage
+I used Claude to understand how the Flask app works. I also used it to generate the codebase map based on the code in this repository.
+
 ## Codebase Map
 
 Mixtape is a backend application built using Flask and SQLAlchemy. The application follows a route-to-service pattern.
