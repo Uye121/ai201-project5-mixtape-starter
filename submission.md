@@ -208,3 +208,25 @@ Response:
 ### Patterns I noticed
 - **Separation of concern:** Route, service and model all have separate function, and they do not overlap. Routes is in charge of input parsing and response formatting. Service takes care of all business logic. Model define classes and relationships between the classes.
 - **Simplicity:** all functions perform one thing only.
+
+---
+
+## Root Cause Analysis
+
+### Issue 1 - My listening streak keeps resetting
+
+#### how you reproduced it
+
+I used Flask shell to call `update_listening_streak()` with controlled datetime input. Since the bug occurred on Sunday, I created a test `User` object with a streka of 1 and set `last_listened_at` to Saturday. First, I call the function with a Saturday datetime, then another call with Sunday. After both calls, the streak printed as 1 instead of 2.
+
+#### How I found the root cause
+
+Since the issue seems to be related to updating the streak, I start from the bottom and look at `update_listening_streak()` first. The condition `today.weekday() != 6` stood out as an issue since `weekday()` returns 6 for Sunday. This prevents the streak update on Sunday as it defaults to 1.
+
+#### The root cause
+
+`datetime.weekday()` returns 6 for Sunday, but `update_listening_streak()` has another caluse that prevents the streak from continuing on Sunday as it blocks `today.weekday() != 6`. The function then defaults to the default, which is reset streak to 1.
+
+#### The fix and side-effect check
+
+Remove the clause `today.weekday() != 6` and retest the streaking used to reproduce the bug. Ran `pytest tests/test_streaks.py` and see if it passes the tests.
