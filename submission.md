@@ -248,3 +248,20 @@ The function `get_playlist_songs()` return all but the last song.
 #### The fix and side-effect check
 
 Remove the index slicing `[:-1]`. The fix is verified by checking the count for all three playlists and running `pytest tests/test_playlists.py`.
+
+### Issue 4 - I got notified when a friend added my song to a playlist but not when they rated it
+
+#### how I reproduced it
+
+I have the user darius rate a song shared by user simone. User simone did not receive notification even though the rating was saved successfully.
+
+#### How I found the root cause
+
+I made sure to note simone's notifications before and after each actions: `add_to_playlist()`, then `rate_song()`. Adding the song creates a notification for sharer but rating the song creates none.
+
+#### The root cause
+
+`rate_song()` saves the rating and commits it, but it never calls `create_notification()`.
+
+#### The fix and side-effect check
+Call `create_notification()` at the end of `rate_song()`. Verify the correct number of notification using the steps in reproducing the issue. Run the pytests to make sure no other side effects.
