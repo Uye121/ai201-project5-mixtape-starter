@@ -231,6 +231,8 @@ Since the issue seems to be related to updating the streak, I start from the bot
 
 Remove the clause `today.weekday() != 6` and retest the streaking used to reproduce the bug. Ran `pytest tests/test_streaks.py` and see if it passes the tests.
 
+---
+
 ### Issue 5 - The last song in a playlist never shows up
 
 #### how I reproduced it
@@ -248,6 +250,8 @@ The function `get_playlist_songs()` return all but the last song.
 #### The fix and side-effect check
 
 Remove the index slicing `[:-1]`. The fix is verified by checking the count for all three playlists and running `pytest tests/test_playlists.py`.
+
+---
 
 ### Issue 4 - I got notified when a friend added my song to a playlist but not when they rated it
 
