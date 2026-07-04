@@ -215,7 +215,7 @@ Response:
 
 ### Issue 1 - My listening streak keeps resetting
 
-#### how you reproduced it
+#### how I reproduced it
 
 I used Flask shell to call `update_listening_streak()` with controlled datetime input. Since the bug occurred on Sunday, I created a test `User` object with a streka of 1 and set `last_listened_at` to Saturday. First, I call the function with a Saturday datetime, then another call with Sunday. After both calls, the streak printed as 1 instead of 2.
 
@@ -230,3 +230,21 @@ Since the issue seems to be related to updating the streak, I start from the bot
 #### The fix and side-effect check
 
 Remove the clause `today.weekday() != 6` and retest the streaking used to reproduce the bug. Ran `pytest tests/test_streaks.py` and see if it passes the tests.
+
+### Issue 5 - The last song in a playlist never shows up
+
+#### how I reproduced it
+
+I called `GET /playlists/<id>/songs for the "Late Night Vibes" playlist. The correct behavior should return 7 songs, but it returned 6 songs. I checked the other playlists and got 1 less than the expected result.
+
+#### How I found the root cause
+
+I check the function that is responsible for getting the song for the playlist, which is `get_playlist_songs()`. I went through the function and saw that it has slice off the last song via `[:-1]`.
+
+#### The root cause
+
+The function `get_playlist_songs()` return all but the last song.
+
+#### The fix and side-effect check
+
+Remove the index slicing `[:-1]`. The fix is verified by checking the count for all three playlists and running `pytest tests/test_playlists.py`.
